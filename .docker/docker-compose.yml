@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/config.yml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/config.yml
+      - ./loki-data/index:/tmp/loki/index
+      - ./loki-data/cache:/tmp/loki/cache
+      - ./loki-data/chunks:/tmp/loki/chunks
+      - ./loki-data/compactor:/tmp/loki/compactor
+      - ./loki-data/wal:/wal
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    container_name: promtail
+    volumes:
+      - ./loki/promtail-config.yml:/etc/promtail/config.yml
+      - ../.logs/django.log
+    command: -config.file=/etc/promtail/config.yml
+
+  tempo:
+    image: grafana/tempo
+    container_name: tempo
+    ports:
+      - "3200:3200"
+    volumes:
+      - ./tempo-config.yml:/etc/tempo.yaml

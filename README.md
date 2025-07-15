@@ -50,6 +50,12 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+### 6. Rode o sistema de monitoramento 
+```bash
+cd .docker
+docker-compose up
+```
+
 ---
 
 ## Documentação da API
